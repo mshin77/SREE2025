@@ -1,0 +1,444 @@
+---
+author:
+  - name: Mikyung Shin 
+    affiliation: Illinois State University
+    email: mshin2@ilstu.edu
+    orcid: https://orcid.org/0000-0001-7907-9193
+format: 
+  revealjs:
+    theme: ["theme/ppt-theme.scss"]
+    transition: slide
+    transition-speed: fast
+    slide-number: c/t
+    logo: ""
+    code-copy: true
+    center-title-slide: false
+    chalkboard: 
+      buttons: true
+    code-fold: true
+    code-overflow: scroll
+    code-link: true
+    highlight-style: a11y
+    touch: true
+    controls: true
+    hash-type: number
+    hash-one-based-index: true
+    slide-tone: false
+linestretch: 1.5
+width: 1024 
+height: 768
+execute: 
+  eval: true
+  echo: true
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+<br> <br>
+
+<h1>Causal Inferences for Data in Single-Case Design Research Across
+Multilevel Contextss</h1>
+
+<br>
+
+<h4>`Mikyung Shin` (Assistant Professor, Illinois State University)</h4>
+
+<h4>`Jiyeon Park` (Associate Professor, Eastern Kentucky
+University)</h4>
+
+<h4><a href="mailto:mshin2@ilstu.edu"><i class="fas fa-envelope"></i>
+Contact</a>   \|  
+<a href="https://mshin77.github.io/SREE2025"><i class="fas fa-presentation"></i>
+Slides</a>   \|  
+<a href="https://github.com/mshin77/SREE2025"><i class="fab fa-github"></i>
+Source</a></h4>
+
+::: footer
+Society for Research on Educational Effectiveness (SREE) 2025
+Conference - October 9, 2025
+:::
+
+------------------------------------------------------------------------
+
+## `Agenda`
+
+```{r}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+packages <- c("readr", "ggplot2", "dplyr", "plotly", "htmltools", "DiagrammeR")
+
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(!installed_packages)) {
+    install.packages(packages[!installed_packages])
+}
+
+suppressPackageStartupMessages({
+    library(readr)
+    library(ggplot2)
+    library(dplyr)
+    library(plotly)
+    library(htmltools)
+    library(DiagrammeR)
+})
+
+htmltools::tags$style(HTML("
+  div.dataTables_info, 
+  div.dataTables_paginate, 
+  .dataTables_length, 
+  .dataTables_filter {
+    font-size: 20px !important;
+  }
+  .dataTables_paginate ul.pagination {
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+  }
+"))
+```
+
+::::: columns
+::: {.column width="70%"}
+-   Visual analysis in single-case design <br>
+-   Multilevel modeling for single-case data <br>
+-   Case study: Technology-assisted instruction for math <br>
+-   Visual analysis results as functional relation <br>
+-   Multilevel modeling results
+:::
+
+::: {.column width="30%"}
+![](data/qr.png){fig-align="center" width="209"}
+:::
+:::::
+
+## `Visual Analysis in single-case design`
+
+-   A single-case design focuses on individual or group performance and
+    demonstrates causal relationships between variables through
+    experimental control (Kazdin, 2019).
+
+-   Behavior changes are evaluated through visual analysis of graphical
+    data, examining changes in level, trend, and variability across
+    phases.
+
+-   Interventions are provided to individual students (*N*=1) or small
+    groups.
+
+------------------------------------------------------------------------
+
+```{r}
+AB <- read_csv("data/ABAB.csv", show_col_types = FALSE)
+
+AB$Case <- paste0("Student ", AB$Case, sep = "")
+
+AB.plot <-  AB %>%
+    ggplot(aes(Session, Outcome)) +
+    geom_line(data = subset(AB, AB$Phase == "Baseline1"), aes(linetype='1'), linewidth = 0.5) +
+    geom_line(data = subset(AB, AB$Phase == "Baseline1.Predict"), aes(linetype='2'), linewidth = 0.5) +
+    geom_line(data = subset(AB, AB$Phase == "Intervention1"), aes(linetype='1'), linewidth = 0.5) +
+    geom_line(data = subset(AB, AB$Phase == "Intervention1.Predict"), aes(linetype='2'), linewidth = 0.5) +
+    geom_line(data = subset(AB, AB$Phase == "Baseline2"), aes(linetype='1'), linewidth = 0.5) +
+    geom_line(data = subset(AB, AB$Phase == "Intervention2"), aes(linetype='1'), linewidth = 0.5) +
+    geom_point(size = 2.5) +
+    theme_minimal(base_size = 13) +
+    theme(
+        plot.title = element_text(face = "bold", size = 15),
+        legend.position ="top",
+        panel.grid.major = element_line(colour = "grey95", linewidth = 0.2),
+        panel.grid.minor = element_blank(),
+        legend.text = element_text(size = 13),
+        legend.title = element_text(size = 13, hjust = 0.5),
+        strip.text.x = element_text(color = "#3B3B3B", size = 13),
+        axis.text.x = element_text(size = 13, color = "#3B3B3B"),
+        axis.text.y = element_text(size = 13, color = "#3B3B3B"),
+        axis.title = element_text(face = "bold", size = 13, color = "#3B3B3B")
+    ) +
+    labs(
+        x = "Session",
+        y = "Correct Percentage (%)"
+    ) +
+    guides(linetype="none") +
+    geom_vline(aes(xintercept = 3.5), linetype = "longdash", linewidth = 0.3, color = "grey10") +
+    geom_vline(aes(xintercept = 8.5), linetype = "longdash", linewidth = 0.3, color = "grey10") +
+    geom_vline(aes(xintercept = 12.5), linetype = "longdash", linewidth = 0.3, color = "grey10") +
+    annotate(geom = "text", x = 2, y = 95, label = "Baseline", color = "#0000FF", fontface = 'bold', size = 5.5) +
+    annotate(geom = "text", x = 6, y = 95, label = "Intervention", color = "#0000FF", fontface = 'bold', size = 5.5) +
+    annotate(geom = "text", x = 10.5, y = 95, label = "Baseline", color = "#0000FF", fontface = 'bold', size = 5.5) +
+    annotate(geom = "text", x = 15, y = 95, label = "Intervention", color = "#0000FF", fontface = 'bold', size = 5.5) +
+    annotate(geom = "text", x = 6, y = 25, label = "Prediction", color = 'red', fontface = 'bold', size = 5.5) +
+    annotate(geom = "text", x = 10.5, y = 5, label = "Verification", color = 'red', fontface = 'bold', size = 5.5) +
+    annotate(geom = "text", x = 15, y = 75, label = "Replication", color = 'red', fontface = 'bold', size = 5.5) +
+    annotate("rect", xmin = 3.8, xmax = 8.3, ymin = 0, ymax = 20, alpha = .2) +
+    annotate("rect", xmin = 8.8, xmax = 12.3, ymin = 60, ymax = 90, alpha = .2) 
+
+AB_plot <- AB.plot %>% ggplotly(height = 350) %>% layout(dragmode = "select")
+```
+
+```{r, echo=FALSE}
+AB_plot
+```
+
+-   Internal validity is established through baseline logic involving
+    three elements: (a) [prediction]{style="color: red;"} (what behavior
+    would look like without intervention), (b)
+    [verification]{style="color: red;"} (demonstrating baseline would
+    continue unchanged), and (c) [replication]{style="color: red;"}
+    (demonstrating effects multiple times).
+
+------------------------------------------------------------------------
+
+## `Multilevel Modeling for Single-Case Data`
+
+-   Individual behavior is repeatedly measured over time.
+
+-   Behavioral changes between time periods are measured using a
+    piecewise growth model.
+
+-   Observations at time *t* are related to observations at previous
+    time points (autocorrelation coefficient).
+
+-   Unlike longitudinal studies such as panel surveys, data are measured
+    intensively and frequently.
+
+-   In repeated measurements, correlation coefficients between nearby
+    time points are higher than those between distant time points.
+
+[<i class="fas fa-code"></i>
+Code](https://mshin77.github.io/multilevel-SCD/){.hover-effect
+style="color: #6D6D6D; text-decoration: none;"}
+
+::: {style="font-size: 0.8em; line-height: 1;"}
+Shin, M., Hart, S. L., & Simmons, M. (2024). Meta-analysis of
+single-case design research: Application of multilevel modeling. *School
+Psychology, 39*(6), 625-635. <https://doi.org/10.1037/spq0000637>
+:::
+
+## `Piecewise Regression Models`
+
+![](figures/piecewise.png)
+
+-   Distinct behavioral variations usually occur when experimental
+    conditions (e.g., the provision or the withdrawal of interventions)
+    change over time (Ledford & Gast, 2018).
+
+-   To accurately model this discontinuity between phases (i.e., changes
+    in levels and trends), researchers can employ a piecewise regression
+    model approach.
+
+-   After providing intervention, students' performance levels are
+    expected to change immediately, and behaviors are expected to
+    increase or decrease in the targeted direction during the
+    intervention phase (Center et al, 1985)
+
+## `Case Study on Technology-Assisted Instruction (TAI) for Math`
+
+1.  What are the effects of `TAI with teacher prompts` on `visualizing`
+    and `solving fraction multiplication` word problems in middle school
+    students with learning disabilities?
+
+2.  What are the moderating effects of `word problem question types`
+    (visualization vs. problem-solving) on
+    `changes between adjacent phases`?
+
+::: {style="font-size: 0.8em; line-height: 1;"}
+Shin, M., & Park, J. (2024). Technology-assisted instruction with
+teacher prompts on fraction multiplication word problems: A single-case
+design with visual analysis and Bayesian multilevel modeling. *Assistive
+Technology*. Advance online publication.
+<https://doi.org/10.1080/10400435.2024.2415366>
+:::
+
+## `Method`
+
+-   Four middle school students with mathematics learning disabilities
+
+-   Middle school in the Southeastern United States
+
+-   Resource math class (50 minutes of daily math instruction)
+
+-   One-on-one intervention by a special education teacher
+
+-   Inclusion criteria: Students in grades 6-8, mathematics achievement
+    (state test), below school level, with individualized math program
+    goals, and screening test scores below 30%
+
+-   Multiple-probe design across subjects with three phases: baseline,
+    intervention, and maintenance
+
+## `Tau-U Effect Size Calculation`
+
+**Baseline to Intervention (A→B):**
+
+$$
+\tau_{A \rightarrow B} = \frac{\sum_{i=1}^{n_A} \sum_{j=1}^{n_B} \text{sign}(B_j - A_i)}{n_A \times n_B}
+$$
+
+**Intervention to Maintenance (B→M):**
+
+$$
+\tau_{B \rightarrow M} = \frac{\sum_{i=1}^{n_B} \sum_{j=1}^{n_M} \text{sign}(M_j - B_i)}{n_B \times n_M}
+$$
+
+$\text{sign}(x)$ = +1 if $x > 0$, -1 if $x < 0$, and 0 if $x = 0$\
+$n_A$ = number of baseline observations\
+$n_B$ = number of intervention observations\
+$n_M$ = number of maintenance observations\
+$\tau \in [-1, 1]$: positive values indicate improvement or sustained
+gains
+
+## `Visual Analysis Results as Functional Relation`
+
+[<i class="fas fa-code"></i>
+Code](https://mshin77.github.io/tech-assisted/#Graphing){.hover-effect
+style="color: #6D6D6D; text-decoration: none;"}
+
+::::: columns
+::: {.column width="60%"}
+
+![](figures/graph.png){fig-align="center" height="600"}
+
+:::
+
+::: {.column width="40%"}
+-   Improvements in both visualization and word problem solving
+    questions compared to baseline.
+
+-   Visualization:\
+    A vs. B Tau = 0.76 \~ 1.00,\
+    B vs. M Tau = -0.29 \~ 0.33
+
+-   Word Problem Solving:\
+    A vs. B Tau = 1.00,\
+    B vs. M Tau = -0.71 \~ 0.10
+:::
+:::::
+
+## `Bayesian Multilevel Modeling`
+
+-   `Cumulative Link Mixed Effects`: Analyzed 6-point ordinal scale data
+    for each item (Level 1) nested within repeated measurement days
+    (Level 2) for each student (Level 3).
+
+```{r, echo=FALSE, fig.align='center', fig.width=10, fig.height=3}
+library(DiagrammeR)
+
+grViz("
+digraph hierarchical {
+  graph [rankdir=TB, nodesep=0.5, ranksep=0.8]
+  node [shape=ellipse, style=filled, fontsize=14, fontname='Arial']
+
+  subgraph cluster_level3 {
+    label='Level 3'
+    fontsize=16
+    labeljust=l
+    Student1 [label='Student 1', fillcolor='#42A5F5', fontcolor=white]
+    dots1 [label='...', shape=plaintext, fontsize=20]
+    Studentk [label='Student k', fillcolor='#42A5F5', fontcolor=white]
+  }
+
+  subgraph cluster_level2 {
+    label='Level 2'
+    fontsize=16
+    labeljust=l
+
+    Day1_S1 [label='Day 1', fillcolor='#90CAF9']
+    Day2_S1 [label='Day 2', fillcolor='#90CAF9']
+    dots2_S1 [label='...', shape=plaintext, fontsize=20]
+    Dayt_S1 [label='Day t', fillcolor='#90CAF9']
+
+    dots_middle [label='...', shape=plaintext, fontsize=20]
+
+    Day1_Sk [label='Day 1', fillcolor='#90CAF9']
+    dots2_Sk [label='...', shape=plaintext, fontsize=20]
+    Dayt_Sk [label='Day t', fillcolor='#90CAF9']
+  }
+
+  subgraph cluster_level1 {
+    label='Level 1'
+    fontsize=16
+    labeljust=l
+
+    Items1 [label='1 2 ... i', fillcolor='#A5D6A7']
+    Items2 [label='1 2 ... i', fillcolor='#A5D6A7']
+    Items3 [label='1 2 ... i', fillcolor='#A5D6A7']
+    Items4 [label='1 2 ... i', fillcolor='#A5D6A7']
+    Items5 [label='1 2 ... i', fillcolor='#A5D6A7']
+    Items6 [label='1 2 ... i', fillcolor='#A5D6A7']
+    Items7 [label='1 2 ... i', fillcolor='#A5D6A7']
+  }
+
+  Student1 -> Day1_S1
+  Student1 -> Day2_S1
+  Student1 -> dots2_S1
+  Student1 -> Dayt_S1
+
+  Studentk -> Day1_Sk
+  Studentk -> dots2_Sk
+  Studentk -> Dayt_Sk
+
+  Day1_S1 -> Items1
+  Day1_S1 -> Items2
+  Day1_S1 -> Items3
+  Day2_S1 -> Items4
+  Dayt_S1 -> Items5
+  Day1_Sk -> Items6
+  Dayt_Sk -> Items7
+
+  {rank=same; Student1; dots1; Studentk}
+  {rank=same; Day1_S1; Day2_S1; dots2_S1; Dayt_S1; dots_middle; Day1_Sk; dots2_Sk; Dayt_Sk}
+  {rank=same; Items1; Items2; Items3; Items4; Items5; Items6; Items7}
+}
+")
+```
+
+-   Bayesian approach is recommended to avoid convergence issues that
+    arise from excessive zeros in baseline phases (Li et al., 2024).
+
+-   By incorporating prior information, researchers can fit models that
+    avoid extreme values (e.g., random effect variances close to zero)
+    with small sample sizes (Meteyard & Davies, 2020).
+
+------------------------------------------------------------------------
+
+$$
+\begin{aligned}
+\operatorname{logit}\left[\pi_{k i j l}(Y>k)\right] & =\ln \left(\frac{\pi\left(Y_{i j l}>k\right)}{\pi\left(Y_{i j l} \leq k\right)}\right) \\
+& =-\alpha_k+\left(\beta_{0 j l}+\beta_{1 j l}\left(t-T_{1 j l}\right)\right. \\
+& +\beta_{2 j l}\left(t>T_{2 j l}\right)+\beta_{3 j l}\left(t-T_{2 j l}\right) \\
+& \times\left(t>T_{2 j l}\right)+\beta_{4 j l}\left(t>T_{3 j l}\right) \\
+& \left.+\beta_{5 j l}\left(t-T_{3 j l}\right) \times\left(t>T_{3 j l}\right)\right),
+\end{aligned}
+$$
+
+-   $\pi_{kijl}$ = cumulative probability of exceeding cut point $k$
+    (6-point rating)
+
+-   $T_{1jl}, T_{2jl}, T_{3jl}$ = baseline, intervention, maintenance
+    start points
+
+-   $(t > T_{2jl}), (t > T_{3jl})$ = logical indicators (0 = false, 1 =
+    true)
+
+-   $\beta_{0jl} \sim \beta_{5jl}$ = level and trend changes
+
+- Demonstrated `higher maintenance effects` on `word problem-solving` questions compared to `visualization` questions.
+
+-   Intervention effects: level (logit = 2.6) and trend (logit = 0.22)
+    changes
+
+## `Conclusions`
+
+-   Although the small number of participants limits the
+    generalizability of the findings, single-case design research is
+    often aimed at understanding and refining interventions on an
+    individual level, making it particularly useful in situations where
+    large-scale trials may not be feasible or necessary.
+
+-   Integrating visual analysis (Tau-U) and Bayesian multilevel modeling
+    supplements intervention evaluation.
+
+-   Visual analysis establishes functional relations while multilevel
+    modeling quantifies phase changes in nested data.
+
+-   Future research should extend this intervention to establish causal
+    inferences across diverse backgrounds and instructional group
+    settings.

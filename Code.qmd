@@ -428,16 +428,14 @@ $$
 ## `Conclusions`
 
 -   Although the small number of participants limits the
-    generalizability of the findings, single-case design research is
-    often aimed at understanding and refining interventions on an
-    individual level, making it particularly useful in situations where
-    large-scale trials may not be feasible or necessary.
+    generalizability of the findings, [single-case design research is often aimed at understanding and refining interventions on an individual level]{style="color: red;"}, making it particularly useful in situations where large-scale trials may not be feasible or necessary.
 
 -   Integrating visual analysis (Tau-U) and Bayesian multilevel modeling
     supplements intervention evaluation.
 
--   Visual analysis establishes functional relations while multilevel
-    modeling quantifies phase changes in nested data.
+-   [Visual analysis]{style="color: red;"} establishes [functional relations]{style="color: red;"} while [multilevel modeling quantifies immediate and trend changes]{style="color: blue;"} in nested data.
+
+- Multilevel modeling allows for examining [moderating effects of contextual factors]{style="color: blue;"} (e.g., question types) on intervention outcomes).
 
 -   Future research should extend this intervention to establish causal
     inferences across diverse backgrounds and instructional group

@@ -435,7 +435,7 @@ $$
 
 -   [Visual analysis]{style="color: red;"} establishes [functional relations]{style="color: red;"} while [multilevel modeling quantifies immediate and trend changes]{style="color: blue;"} in nested data.
 
-- Multilevel modeling allows for examining [moderating effects of contextual factors]{style="color: blue;"} (e.g., question types) on intervention outcomes).
+- Multilevel modeling allows for examining [moderating effects of contextual factors]{style="color: blue;"} (e.g., question types) on intervention outcomes.
 
 -   Future research should extend this intervention to establish causal
     inferences across diverse backgrounds and instructional group
